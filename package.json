@@ -1,0 +1,27 @@
+{
+  "name": "firetracker-server",
+  "version": "1.0.0",
+  "description": "Server-side components for the FireTracker app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FireTracker-App/firetracker-server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FireTracker-App/firetracker-server/issues"
+  },
+  "homepage": "https://github.com/FireTracker-App/firetracker-server#readme",
+  "dependencies": {
+    "koa": "^2.13.0",
+    "mongoose": "^5.10.11"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  }
+}
