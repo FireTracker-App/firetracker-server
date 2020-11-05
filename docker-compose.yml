@@ -17,7 +17,7 @@ services:
       - MONGO_DB=$MONGO_DB
       - WAIT_HOSTS=db:27017
     ports:
-      - "80:8080"
+      - "8080:8080"
     volumes:
       - .:/home/node/app
       - node_modules:/home/node/app/node_modules
@@ -25,7 +25,7 @@ services:
       - firetracker
     depends_on:
       - db
-    command: sh -c "/wait && /home/node/app/node_modules/.bin/nodemon index.js"
+    command: sh -c "/wait && /home/node/app/node_modules/.bin/nodemon --legacy-watch index.js"
   db:
     image: mongo:4.1.8-xenial
     container_name: db
