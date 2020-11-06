@@ -2,6 +2,7 @@ const Koa = require('koa');
 const helmet = require('koa-helmet');
 const logger = require('koa-logger');
 const koaBody = require('koa-body');
+const koaRespond = require('koa-respond');
 const Router = require('koa-router');
 
 const indexPage = require('./routes/index-page');
@@ -13,6 +14,7 @@ const app = new Koa();
 app.use(logger());
 app.use(helmet());
 app.use(koaBody());
+app.use(koaRespond());
 
 // Set up router for index and marker routes
 const router = new Router();
