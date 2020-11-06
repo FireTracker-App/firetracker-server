@@ -19,7 +19,10 @@
   "homepage": "https://github.com/FireTracker-App/firetracker-server#readme",
   "dependencies": {
     "koa": "^2.13.0",
+    "koa-body": "^4.2.0",
     "koa-helmet": "^6.0.0",
+    "koa-logger": "^3.2.1",
+    "koa-router": "^10.0.0",
     "mongoose": "^5.10.11"
   },
   "devDependencies": {
