@@ -7,4 +7,10 @@ USER node
 RUN npm install
 COPY --chown=node:node . .
 EXPOSE 8080
-CMD ["node", "app.js"]
+
+USER root
+ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.2.1/wait /wait
+RUN chmod +x /wait
+USER node
+
+CMD ["npm", "start"]
