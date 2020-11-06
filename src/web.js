@@ -3,7 +3,7 @@ const helmet = require('koa-helmet');
 const logger = require('koa-logger');
 const koaBody = require('koa-body');
 
-const helloWorld = require('./routes/hello-world');
+const indexPage = require('./routes/index-page');
 
 const app = new Koa();
 
@@ -11,7 +11,6 @@ app.use(logger());
 app.use(helmet());
 app.use(koaBody());
 
-app.use(helloWorld.routes());
-app.use(helloWorld.allowedMethods());
+app.use(indexPage.routes());
 
 app.listen(Number(process.env['PORT']) || 8080);
