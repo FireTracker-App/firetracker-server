@@ -50,12 +50,15 @@ router.post('/', async (ctx, next) =>
     }
     
     // Explicitly specify properties to disable extra data stuffing
-    await ReportedMarker.create({
+    const marker = await ReportedMarker.create({
         latitude: data['latitude'],
         longitude: data['longitude'],
         reporter: data['reporter']
     });
-    ctx.created('marker created');
+    ctx.created({
+        message: 'marker created',
+        marker
+    });
     next();
 });
 
