@@ -5,6 +5,7 @@ const pointInPolygon = require('point-in-polygon');
 function pointInsideCalifornia(latitude, longitude)
 {
     // Points developed from http://www.birdtheme.org/useful/v3tool.html
+    // If finer coordinates are needed, they can be found here: http://econym.org.uk/gmap/states.xml
     const californiaRough = [
         [42.069470, -124.295862],
         [41.971529, -120.077112],
@@ -36,11 +37,7 @@ router.get('/', async (ctx, next) =>
 router.post('/', async (ctx, next) =>
 {
     const data = ctx.request.body;
-    if(typeof data !== 'object')
-    {
-        ctx.badRequest('invalid data');
-        return next();
-    }
+    // Make sure the point is within California and that it has a reporter
     if(!pointInsideCalifornia(data['latitude'], data['longitude']))
     {
         ctx.badRequest('point outside California');
@@ -51,6 +48,8 @@ router.post('/', async (ctx, next) =>
         ctx.badRequest('missing reporter');
         return next();
     }
+    
+    // Explicitly specify properties to disable extra data stuffing
     await ReportedMarker.create({
         latitude: data['latitude'],
         longitude: data['longitude'],
