@@ -1,5 +1,25 @@
 const Router = require('koa-router');
 const {ReportedMarker} = require('../models/ReportedMarker');
+const pointInPolygon = require('point-in-polygon');
+
+function pointInsideCalifornia(latitude, longitude)
+{
+    // Points developed from http://www.birdtheme.org/useful/v3tool.html
+    const californiaRough = [
+        [42.069470, -124.295862],
+        [41.971529, -120.077112],
+        [39.065890, -120.033167],
+        [34.347733, -114.276331],
+        [32.662257, -114.847620],
+        [32.551200, -117.132776],
+        [33.947677, -118.495081],
+        [34.492737, -120.472620],
+        [36.390102, -121.922815],
+        [40.317011, -124.339807],
+        [42.069470, -124.295862]
+    ];
+    return pointInPolygon([latitude, longitude], californiaRough);
+}
 
 const router = new Router();
 
@@ -15,9 +35,28 @@ router.get('/', async (ctx, next) =>
 // Create a marker upon POST request
 router.post('/', async (ctx, next) =>
 {
-    //TODO proper validation (ensure reported time can't be set)
-    await ReportedMarker.create(ctx.request.body);
-    ctx.response.status = 201;
+    const data = ctx.request.body;
+    if(typeof data !== 'object')
+    {
+        ctx.badRequest('invalid data');
+        return next();
+    }
+    if(!pointInsideCalifornia(data['latitude'], data['longitude']))
+    {
+        ctx.badRequest('point outside California');
+        return next();
+    }
+    if(!data['reporter'])
+    {
+        ctx.badRequest('missing reporter');
+        return next();
+    }
+    await ReportedMarker.create({
+        latitude: data['latitude'],
+        longitude: data['longitude'],
+        reporter: data['reporter']
+    });
+    ctx.created('marker created');
     next();
 });
 
@@ -33,7 +72,7 @@ router.post('/clear', async (ctx, next) =>
     }
     else
     {
-        ctx.badRequest('Missing id');
+        ctx.badRequest('missing id');
     }
     next();
 });
