@@ -24,7 +24,8 @@
     "koa-logger": "^3.2.1",
     "koa-respond": "^2.1.0",
     "koa-router": "^10.0.0",
-    "mongoose": "^5.10.11"
+    "mongoose": "^5.10.11",
+    "point-in-polygon": "^1.0.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.6"
