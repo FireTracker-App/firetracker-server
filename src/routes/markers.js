@@ -28,7 +28,7 @@ router.get('/', async (ctx, next) =>
 {
     // Leave out reporter id
     const markers = await ReportedMarker.find({}).select('longitude latitude reported');
-    ctx.body = JSON.stringify(markers);
+    ctx.ok(markers);
     next();
 });
 
