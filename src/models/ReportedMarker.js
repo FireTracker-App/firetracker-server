@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// Represents a user-reported fire marker
 const ReportedMarkerSchema = new mongoose.Schema({
     longitude: {type: Number, required: true},
     latitude: {type: Number, required: true},
