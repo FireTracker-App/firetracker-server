@@ -6,13 +6,11 @@ const {ReportedMarker} = require('./models/ReportedMarker');
 async function markerCleanup()
 {
     // Remove markers over 24h old
-    const data = await ReportedMarker.deleteMany({
+    await ReportedMarker.deleteMany({
         reported: {
             $lte: Date.now() - (24 * 60 * 60 * 1000)
         }
     });
-    console.log('Got data: ');
-    console.log(data);
 }
 
 // Cleanup every 15 minutes
