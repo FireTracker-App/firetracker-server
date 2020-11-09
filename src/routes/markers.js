@@ -1,7 +1,7 @@
 const Router = require('koa-router');
 const {ReportedMarker} = require('../models/ReportedMarker');
 const pointInPolygon = require('point-in-polygon');
-const {manageSocket} = require('../websocket');
+const socketManager = require('../websocket');
 
 function pointInsideCalifornia(latitude, longitude)
 {
@@ -32,7 +32,7 @@ router.get('/', async (ctx, next) =>
     if(ctx['ws'])
     {
         const ws = await ctx.ws();
-        manageSocket(ws);
+        socketManager.manageSocket(ws);
         return;
     }
     // Leave out reporter id
@@ -66,6 +66,15 @@ router.post('/', async (ctx, next) =>
     ctx.created({
         message: 'marker created',
         marker
+    });
+    socketManager.sendToAll({
+        action: 'created',
+        data: {
+            reported: marker.reported,
+            '_id': marker['_id'],
+            latitude: marker.latitude,
+            longitude: marker.longitude
+        }
     });
     next();
 });
