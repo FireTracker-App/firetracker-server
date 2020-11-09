@@ -1,6 +1,7 @@
 const Router = require('koa-router');
 const {ReportedMarker} = require('../models/ReportedMarker');
 const pointInPolygon = require('point-in-polygon');
+const {manageSocket} = require('../websocket');
 
 function pointInsideCalifornia(latitude, longitude)
 {
@@ -27,6 +28,13 @@ const router = new Router();
 // Send back markers in json
 router.get('/', async (ctx, next) =>
 {
+    // If this is a websocket request, manage the socket elsewhere
+    if(ctx['ws'])
+    {
+        const ws = await ctx.ws();
+        manageSocket(ws);
+        return;
+    }
     // Leave out reporter id
     const markers = await ReportedMarker.find({}).select('longitude latitude reported');
     ctx.ok(markers);

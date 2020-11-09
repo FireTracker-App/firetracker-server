@@ -4,6 +4,7 @@ const logger = require('koa-logger');
 const koaBody = require('koa-body');
 const koaRespond = require('koa-respond');
 const Router = require('koa-router');
+const websocket = require('koa-easy-ws')
 
 const indexPage = require('./routes/index-page');
 const markers = require('./routes/markers');
@@ -13,6 +14,7 @@ const app = new Koa();
 // Log requests, use koa-helmet to set secure headers, and enable body parsing
 app.use(logger());
 app.use(helmet());
+app.use(websocket());
 app.use(koaBody());
 app.use(koaRespond());
 
