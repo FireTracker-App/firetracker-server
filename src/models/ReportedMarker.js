@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const ReportedMarkerSchema = new mongoose.Schema({
     longitude: {type: Number, required: true},
     latitude: {type: Number, required: true},
-    reported: {type: Date, default: Date.now()},
+    reported: {type: Date, default: Date.now},
     reporter: {type: String, required: true}
 });
 
