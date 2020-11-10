@@ -41,6 +41,18 @@ router.get('/', async (ctx, next) =>
     next();
 });
 
+// Add path to clear *all* markers only if running in development
+const env = process.env.NODE_ENV || 'development';
+if(env === 'development')
+{
+    router.get('/dev-clear', async (ctx, next) =>
+    {
+        const {deletedCount} = await ReportedMarker.deleteMany({});
+        ctx.response.body = `Removed ${deletedCount} marker${deletedCount === 1 ? '' : 's'}`;
+        return next();
+    });
+}
+
 // Create a marker upon POST request
 router.post('/', async (ctx, next) =>
 {
