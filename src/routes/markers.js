@@ -116,4 +116,24 @@ router.post('/clear', async (ctx, next) =>
     next();
 });
 
+router.delete('/:marker', async (ctx, next) =>
+{
+    const id = ctx.request.query['id'];
+    if(!id)
+    {
+        return ctx.badRequest('missing id');
+    }
+    const marker = await ReportedMarker.findOne({'_id': ctx.params['marker']}, 'reporter').exec();
+    if(!marker)
+    {
+        return ctx.badRequest('unknown marker');
+    }
+    else if(marker.reporter !== id)
+    {
+        return ctx.badRequest('id does not match reporter');
+    }
+    marker.remove();
+    ctx.ok('removed marker');
+});
+
 module.exports = router;
