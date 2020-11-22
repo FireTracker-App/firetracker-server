@@ -35,8 +35,16 @@ router.get('/', async (ctx, next) =>
         socketManager.manageSocket(ws);
         return;
     }
-    // Leave out reporter id
-    const markers = await ReportedMarker.find({}).select('longitude latitude reported');
+    
+    const markers = (await ReportedMarker.find({}).lean()).map(marker =>
+    {
+        // Indicate that a marker can be removed if it was created by the provided id
+        marker.canRemove = (ctx.request.query['id'] === marker['reporter']);
+        // Leave out reporter id
+        marker['reporter'] = undefined;
+        marker['__v'] = undefined;
+        return marker;
+    });
     ctx.ok(markers);
     next();
 });
