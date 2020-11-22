@@ -35,8 +35,16 @@ router.get('/', async (ctx, next) =>
         socketManager.manageSocket(ws);
         return;
     }
-    // Leave out reporter id
-    const markers = await ReportedMarker.find({}).select('longitude latitude reported');
+    
+    const markers = (await ReportedMarker.find({}).lean()).map(marker =>
+    {
+        // Indicate that a marker can be removed if it was created by the provided id
+        marker.canRemove = (ctx.request.query['id'] === marker['reporter']);
+        // Leave out reporter id
+        marker['reporter'] = undefined;
+        marker['__v'] = undefined;
+        return marker;
+    });
     ctx.ok(markers);
     next();
 });
@@ -106,6 +114,35 @@ router.post('/clear', async (ctx, next) =>
         ctx.badRequest('missing id');
     }
     next();
+});
+
+router.delete('/:marker', async (ctx, next) =>
+{
+    const id = ctx.request.query['id'];
+    if(!id)
+    {
+        return ctx.badRequest('missing id');
+    }
+    const marker = await ReportedMarker.findOne({'_id': ctx.params['marker']}).exec();
+    if(!marker)
+    {
+        return ctx.badRequest('unknown marker');
+    }
+    else if(marker.reporter !== id)
+    {
+        return ctx.badRequest('id does not match reporter');
+    }
+    marker.remove();
+    socketManager.sendToAll({
+        action: 'removed',
+        data: {
+            reported: marker.reported,
+            '_id': marker['_id'],
+            latitude: marker.latitude,
+            longitude: marker.longitude
+        }
+    });
+    ctx.ok('removed marker');
 });
 
 module.exports = router;
