@@ -123,7 +123,7 @@ router.delete('/:marker', async (ctx, next) =>
     {
         return ctx.badRequest('missing id');
     }
-    const marker = await ReportedMarker.findOne({'_id': ctx.params['marker']}, 'reporter').exec();
+    const marker = await ReportedMarker.findOne({'_id': ctx.params['marker']}).exec();
     if(!marker)
     {
         return ctx.badRequest('unknown marker');
@@ -133,6 +133,15 @@ router.delete('/:marker', async (ctx, next) =>
         return ctx.badRequest('id does not match reporter');
     }
     marker.remove();
+    socketManager.sendToAll({
+        action: 'removed',
+        data: {
+            reported: marker.reported,
+            '_id': marker['_id'],
+            latitude: marker.latitude,
+            longitude: marker.longitude
+        }
+    });
     ctx.ok('removed marker');
 });
 
