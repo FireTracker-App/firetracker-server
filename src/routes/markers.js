@@ -81,7 +81,8 @@ router.post('/', async (ctx, next) =>
     const marker = await ReportedMarker.create({
         latitude: data['latitude'],
         longitude: data['longitude'],
-        reporter: data['reporter']
+        reporter: data['reporter'],
+        canRemove: true
     });
     ctx.created({
         message: 'marker created',
@@ -93,7 +94,8 @@ router.post('/', async (ctx, next) =>
             reported: marker.reported,
             '_id': marker['_id'],
             latitude: marker.latitude,
-            longitude: marker.longitude
+            longitude: marker.longitude,
+            canRemove: false
         }
     });
     next();
@@ -139,7 +141,8 @@ router.delete('/:marker', async (ctx, next) =>
             reported: marker.reported,
             '_id': marker['_id'],
             latitude: marker.latitude,
-            longitude: marker.longitude
+            longitude: marker.longitude,
+            canRemove: false
         }
     });
     ctx.ok('removed marker');
