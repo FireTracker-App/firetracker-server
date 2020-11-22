@@ -81,12 +81,17 @@ router.post('/', async (ctx, next) =>
     const marker = await ReportedMarker.create({
         latitude: data['latitude'],
         longitude: data['longitude'],
-        reporter: data['reporter'],
-        canRemove: true
+        reporter: data['reporter']
     });
     ctx.created({
         message: 'marker created',
-        marker
+        marker: {
+            canRemove: true,
+            reported: marker.reported,
+            '_id': marker['_id'],
+            latitude: marker.latitude,
+            longitude: marker.longitude
+        }
     });
     socketManager.sendToAll({
         action: 'created',
