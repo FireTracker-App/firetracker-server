@@ -82,11 +82,18 @@ router.post('/', async (ctx, next) =>
         latitude: data['latitude'],
         longitude: data['longitude'],
         reporter: data['reporter'],
-        canRemove: true
+        description: data['description']
     });
     ctx.created({
         message: 'marker created',
-        marker
+        marker: {
+            canRemove: true,
+            reported: marker.reported,
+            '_id': marker['_id'],
+            latitude: marker.latitude,
+            longitude: marker.longitude,
+            description: marker.description
+        }
     });
     socketManager.sendToAll({
         action: 'created',
@@ -95,6 +102,7 @@ router.post('/', async (ctx, next) =>
             '_id': marker['_id'],
             latitude: marker.latitude,
             longitude: marker.longitude,
+            description: marker.description,
             canRemove: false
         }
     });
@@ -142,6 +150,7 @@ router.delete('/:marker', async (ctx, next) =>
             '_id': marker['_id'],
             latitude: marker.latitude,
             longitude: marker.longitude,
+            description: marker.description,
             canRemove: false
         }
     });
