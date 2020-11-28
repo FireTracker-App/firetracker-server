@@ -2,6 +2,7 @@ const Router = require('koa-router');
 const {ReportedMarker} = require('../models/ReportedMarker');
 const pointInPolygon = require('point-in-polygon');
 const socketManager = require('../websocket');
+const Filter = require('bad-words');
 
 function pointInsideCalifornia(latitude, longitude)
 {
@@ -24,6 +25,7 @@ function pointInsideCalifornia(latitude, longitude)
 }
 
 const router = new Router();
+const filter = new Filter();
 
 // Send back markers in json
 router.get('/', async (ctx, next) =>
@@ -88,6 +90,7 @@ router.post('/', async (ctx, next) =>
             ctx.badRequest('description too long');
             return next();
         }
+        data['description'] = filter.clean(data['description']);
     }
     
     // Explicitly specify properties to disable extra data stuffing
