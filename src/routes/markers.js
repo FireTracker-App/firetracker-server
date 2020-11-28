@@ -76,6 +76,19 @@ router.post('/', async (ctx, next) =>
         ctx.badRequest('missing reporter');
         return next();
     }
+    if(data['description'] !== undefined)
+    {
+        if(typeof data['description'] !== 'string')
+        {
+            ctx.badRequest('bad description type');
+            return next();
+        }
+        else if(data['description'].length > 240)
+        {
+            ctx.badRequest('description too long');
+            return next();
+        }
+    }
     
     // Explicitly specify properties to disable extra data stuffing
     const marker = await ReportedMarker.create({
