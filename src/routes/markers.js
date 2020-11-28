@@ -2,6 +2,7 @@ const Router = require('koa-router');
 const {ReportedMarker} = require('../models/ReportedMarker');
 const pointInPolygon = require('point-in-polygon');
 const socketManager = require('../websocket');
+const Filter = require('bad-words');
 
 function pointInsideCalifornia(latitude, longitude)
 {
@@ -24,6 +25,7 @@ function pointInsideCalifornia(latitude, longitude)
 }
 
 const router = new Router();
+const filter = new Filter();
 
 // Send back markers in json
 router.get('/', async (ctx, next) =>
@@ -76,12 +78,27 @@ router.post('/', async (ctx, next) =>
         ctx.badRequest('missing reporter');
         return next();
     }
+    if(data['description'] !== undefined)
+    {
+        if(typeof data['description'] !== 'string')
+        {
+            ctx.badRequest('bad description type');
+            return next();
+        }
+        else if(data['description'].length > 240)
+        {
+            ctx.badRequest('description too long');
+            return next();
+        }
+        data['description'] = filter.clean(data['description']);
+    }
     
     // Explicitly specify properties to disable extra data stuffing
     const marker = await ReportedMarker.create({
         latitude: data['latitude'],
         longitude: data['longitude'],
-        reporter: data['reporter']
+        reporter: data['reporter'],
+        description: data['description']
     });
     ctx.created({
         message: 'marker created',
@@ -90,7 +107,8 @@ router.post('/', async (ctx, next) =>
             reported: marker.reported,
             '_id': marker['_id'],
             latitude: marker.latitude,
-            longitude: marker.longitude
+            longitude: marker.longitude,
+            description: marker.description
         }
     });
     socketManager.sendToAll({
@@ -100,6 +118,7 @@ router.post('/', async (ctx, next) =>
             '_id': marker['_id'],
             latitude: marker.latitude,
             longitude: marker.longitude,
+            description: marker.description,
             canRemove: false
         }
     });
@@ -147,6 +166,7 @@ router.delete('/:marker', async (ctx, next) =>
             '_id': marker['_id'],
             latitude: marker.latitude,
             longitude: marker.longitude,
+            description: marker.description,
             canRemove: false
         }
     });
