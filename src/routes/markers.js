@@ -78,7 +78,7 @@ router.post('/', async (ctx, next) =>
         ctx.badRequest('missing reporter');
         return next();
     }
-    if(data['description'] !== undefined)
+    if(data['description'] !== undefined && data['description'] !== '')
     {
         if(typeof data['description'] !== 'string')
         {
